@@ -1,0 +1,92 @@
+name: 'Terraform check'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: check-secrets
+        uses: secret-scanner/action@0.0.2
+
+  code-scan:
+    needs: check-secrets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.50.3
+
+      - name: Cache plugin dir
+        uses: actions/cache@v4
+        with:
+          path: ~/.tflint.d/plugins
+          key: tflint-${{ hashFiles('.tflint.hcl') }}
+
+      - name: TFlint init
+        run: tflint --init --config=${{ github.workspace }}/.tflint.hcl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: TFlint run
+        run: tflint -f compact --config=${{ github.workspace }}/.tflint.hcl --recursive
+
+      - name: Run trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+  terraform:
+    needs: code-scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/enviroments/dev
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.1.7
+          terraform_wrapper: false
+
+      - name: Terraform format
+        run: terraform fmt -check
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        if: "contains(github.event.head_commit.message, '[!go deploy!]')"
+        run: terraform plan -no-color
+
+      - name: Terraform Apply
+        if: "contains(github.event.head_commit.message, '[!go deploy!]')"
+        run: terraform apply -auto-approve
