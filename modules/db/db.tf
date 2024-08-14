@@ -25,21 +25,21 @@ resource "aws_security_group" "database_security_group" {
 
 resource "aws_db_parameter_group" "database_parameter" {
   name   = var.project_name
-  family = "mysql5.7"
+  family = "mysql8.0"
 
   parameter {
     name  = "require_secure_transport"
-    value = true
+    value = "1"
   }
 }
 
 resource "aws_db_instance" "database" {
-  identifier            = "masterdb${var.env}"
-  instance_class        = "db.t2.small"
+  identifier            = "${var.project_name}-${var.env}-masterdb"
+  instance_class        = "db.t4g.large"
   allocated_storage     = 20
   max_allocated_storage = 50
   engine                = "mysql"
-  engine_version        = "5.7"
+  engine_version        = "8.0"
 
   db_name  = "visitlink${var.env}"
   username = "visit_link"
@@ -61,9 +61,9 @@ resource "aws_db_instance" "database" {
 }
 
 resource "aws_db_instance" "database_replica" {
-  identifier             = "replicadb${var.env}"
+  identifier             = "${var.project_name}-${var.env}-replicadb"
   replicate_source_db    = aws_db_instance.database.identifier
-  instance_class         = "db.t2.small"
+  instance_class         = "db.t4g.large"
   vpc_security_group_ids = [aws_security_group.database_security_group.id]
   parameter_group_name   = aws_db_parameter_group.database_parameter.name
 
@@ -82,5 +82,5 @@ resource "aws_db_instance" "database_replica" {
 resource "random_password" "password" {
   length           = 16
   special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  override_special = "!#%*()-_=+{}<>?"
 }

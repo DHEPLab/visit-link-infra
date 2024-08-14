@@ -41,24 +41,24 @@ module "network" {
   az_count     = 2
 }
 
-# module "repository" {
-#   source = "../../modules/repository"
-#
-#   project_name = local.project_name
-# }
-#
-# module "db" {
-#   source = "../../modules/db"
-#
-#   env                            = local.environment
-#   project_name                   = local.project_name
-#   vpc_id                         = module.network.vpc_id
-#   subnet_ids                     = module.network.private_subnet.ids
-#   from_subnet_cidr_blocks        = module.network.private_subnet.cidr_blocks
-#   bastion_host_subnet_cidr_block = module.network.public_subnet.cidr_blocks[0]
-#   bastion_host_subnet_id         = module.network.public_subnet.ids[0]
-# }
-#
+module "repository" {
+  source = "../../modules/repository"
+
+  project_name = local.project_name
+}
+
+module "db" {
+  source = "../../modules/db"
+
+  env                            = local.environment
+  project_name                   = local.project_name
+  vpc_id                         = module.network.vpc_id
+  subnet_ids                     = module.network.private_subnet.ids
+  from_subnet_cidr_blocks        = module.network.private_subnet.cidr_blocks
+  bastion_host_subnet_cidr_block = module.network.public_subnet.cidr_blocks[0]
+  bastion_host_subnet_id         = module.network.public_subnet.ids[0]
+}
+
 # module "service" {
 #   source = "../../modules/services"
 #

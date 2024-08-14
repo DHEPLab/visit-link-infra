@@ -17,12 +17,16 @@ resource "aws_security_group" "ec2_bastion_sg" {
   description = "EC2 Bastion Host Security Group"
   name        = "${var.project_name}-ec2-bastion-sg-${var.env}"
   vpc_id      = var.vpc_id
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    # trivy:ignore:avd-aws-0107
-    cidr_blocks = ["0.0.0.0/0"]
+
+  dynamic "ingress" {
+    for_each = [22, 9000] # for ssh and sonarqube
+    content {
+      from_port = ingress.value
+      to_port   = ingress.value
+      protocol  = "tcp"
+      # trivy:ignore:avd-aws-0107
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 
   egress {
@@ -47,7 +51,7 @@ data "aws_ami" "latest_amazon_linux" {
 ## EC2 Bastion Host
 resource "aws_instance" "ec2_bastion_host" {
   ami                         = data.aws_ami.latest_amazon_linux.id
-  instance_type               = "t2.micro"
+  instance_type               = "t2.medium"
   key_name                    = aws_key_pair.ec2_bastion_host_key_pair.key_name
   vpc_security_group_ids      = [aws_security_group.ec2_bastion_sg.id]
   subnet_id                   = var.bastion_host_subnet_id
@@ -55,7 +59,7 @@ resource "aws_instance" "ec2_bastion_host" {
   user_data                   = templatefile("${path.module}/userdata.tpl", {})
 
   root_block_device {
-    volume_size           = 8
+    volume_size           = 20
     delete_on_termination = true
     volume_type           = "gp2"
     encrypted             = true
