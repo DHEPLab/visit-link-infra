@@ -1,11 +1,11 @@
 terraform {
-  #   backend "s3" {
-  #     region         = "us-east-1"
-  #     bucket         = "visit-link-tf-state-bucket-dev"
-  #     key            = "tf-infra/terraform.tfstate"
-  #     dynamodb_table = "visit-link-tf-state-locking-dev"
-  #     encrypt        = true
-  #   }
+  backend "s3" {
+    region         = "us-east-1"
+    bucket         = "visit-link-tf-state-bucket-dev"
+    key            = "tf-infra/terraform.tfstate"
+    dynamodb_table = "visit-link-tf-state-locking-dev"
+    encrypt        = true
+  }
 
   required_providers {
     aws = {
@@ -33,14 +33,14 @@ module "tf-state" {
   dynamodb_table = "visit-link-tf-state-locking-dev"
 }
 
-# module "network" {
-#   source = "../../modules/network"
-#
-#   env = local.environment
-#   project_name = local.project_name
-#   az_count = 2
-# }
-#
+module "network" {
+  source = "../../modules/network"
+
+  env          = local.environment
+  project_name = local.project_name
+  az_count     = 2
+}
+
 # module "repository" {
 #   source = "../../modules/repository"
 #
@@ -62,13 +62,13 @@ module "tf-state" {
 # module "service" {
 #   source = "../../modules/services"
 #
-#   env           = local.environment
-#   project_name  = local.project_name
-#   vpc_id = module.network.vpc_id
-#   alb_subnet_ids = module.network.public_subnet.ids
-#   ecs_subnet_ids = module.network.private_subnet.ids
-#   service_image_uri = module.repository.service_image_uri
+#   env                 = local.environment
+#   project_name        = local.project_name
+#   vpc_id              = module.network.vpc_id
+#   alb_subnet_ids      = module.network.public_subnet.ids
+#   ecs_subnet_ids      = module.network.private_subnet.ids
+#   service_image_uri   = module.repository.service_image_uri
 #   admin_web_image_uri = module.repository.admin_web_image_uri
-#   region        = local.region
-#   database_url  = module.db.database_url
+#   region              = local.region
+#   database_url        = module.db.database_url
 # }
