@@ -59,16 +59,16 @@ module "db" {
   bastion_host_subnet_id         = module.network.public_subnet.ids[0]
 }
 
-# module "service" {
-#   source = "../../modules/services"
-#
-#   env                 = local.environment
-#   project_name        = local.project_name
-#   vpc_id              = module.network.vpc_id
-#   alb_subnet_ids      = module.network.public_subnet.ids
-#   ecs_subnet_ids      = module.network.private_subnet.ids
-#   service_image_uri   = module.repository.service_image_uri
-#   admin_web_image_uri = module.repository.admin_web_image_uri
-#   region              = local.region
-#   database_url        = module.db.database_url
-# }
+module "service" {
+  source = "../../modules/services"
+
+  env                 = local.environment
+  project_name        = local.project_name
+  vpc_id              = module.network.vpc_id
+  alb_subnet_ids      = module.network.public_subnet.ids
+  ecs_subnet_ids      = module.network.private_subnet.ids
+  service_image_uri   = module.repository.service_image_uri
+  admin_web_image_uri = module.repository.admin_web_image_uri
+  region              = local.region
+  database_url        = module.db.database_url
+}

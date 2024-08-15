@@ -7,3 +7,18 @@ resource "aws_secretsmanager_secret_version" "database_url_key_version" {
   secret_id     = aws_secretsmanager_secret.database_url_key.id
   secret_string = var.database_url
 }
+
+resource "random_password" "jwt_key" {
+  length  = 32
+  special = true
+}
+
+resource "aws_secretsmanager_secret" "jwt_key" {
+  name        = "${var.project_name}-secretsmanager-${var.env}"
+  description = "JWT Key for generate access token"
+}
+
+resource "aws_secretsmanager_secret_version" "jwt_key_version" {
+  secret_id     = aws_secretsmanager_secret.jwt_key.id
+  secret_string = random_password.jwt_key.result
+}

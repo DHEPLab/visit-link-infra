@@ -1,4 +1,3 @@
-# TODO check port and health check and listener rule
 #trivy:ignore:AVD-AWS-0053
 resource "aws_lb" "application_load_balancer" {
   name                       = "${var.project_name}-alb-${var.env}"
@@ -10,7 +9,7 @@ resource "aws_lb" "application_load_balancer" {
 
 
 resource "aws_lb_target_group" "admin_web_target_group" {
-  name        = "${var.project_name}-admin-web-target-group-${var.env}"
+  name        = "${var.project_name}-admin-web-tg-${var.env}"
   port        = local.admin_web_container_binding_port
   protocol    = "HTTP"
   target_type = "ip"
@@ -32,29 +31,40 @@ resource "aws_lb_listener" "admin_web_http_listener" {
   # trivy:ignore:avd-aws-0054
   protocol = "HTTP"
   default_action {
-    type = "redirect"
-
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-}
-
-resource "aws_lb_listener" "admin_web_https_listener" {
-  load_balancer_arn = aws_lb.application_load_balancer.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate.certificate.arn
-  default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.admin_web_target_group.arn
   }
 }
 
+# resource "aws_lb_listener" "admin_web_http_listener" {
+#   load_balancer_arn = aws_lb.application_load_balancer.arn
+#   port              = "80"
+#   # trivy:ignore:avd-aws-0054
+#   protocol = "HTTP"
+#   default_action {
+#     type = "redirect"
+#
+#     redirect {
+#       port        = "443"
+#       protocol    = "HTTPS"
+#       status_code = "HTTP_301"
+#     }
+#   }
+# }
+
+# resource "aws_lb_listener" "admin_web_https_listener" {
+#   load_balancer_arn = aws_lb.application_load_balancer.arn
+#   port              = "443"
+#   protocol          = "HTTPS"
+#   certificate_arn   = aws_acm_certificate.certificate.arn
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.admin_web_target_group.arn
+#   }
+# }
+
 resource "aws_lb_target_group" "service_target_group" {
-  name        = "${var.project_name}-service-target-group-${var.env}"
+  name        = "${var.project_name}-service-tg-${var.env}"
   port        = local.service_container_binding_port
   protocol    = "HTTP"
   target_type = "ip"
@@ -66,13 +76,13 @@ resource "aws_lb_target_group" "service_target_group" {
     protocol            = "HTTP"
     matcher             = "200"
     timeout             = "3"
-    path                = "/api/healthcheck"
+    path                = "/"
     unhealthy_threshold = "2"
   }
 }
 
 resource "aws_lb_listener_rule" "service_forward_listener" {
-  listener_arn = aws_lb_listener.admin_web_https_listener.arn
+  listener_arn = aws_lb_listener.admin_web_http_listener.arn
   priority     = 100
 
   action {
@@ -82,7 +92,7 @@ resource "aws_lb_listener_rule" "service_forward_listener" {
 
   condition {
     path_pattern {
-      values = ["/api/*"]
+      values = ["/api/*", "/admin/*"]
     }
   }
 
@@ -90,4 +100,3 @@ resource "aws_lb_listener_rule" "service_forward_listener" {
     name = "${var.project_name}-service-forward-${var.env}"
   }
 }
-

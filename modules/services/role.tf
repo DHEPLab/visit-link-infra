@@ -29,6 +29,7 @@ data "aws_iam_policy_document" "ecs_task_role_policy_document" {
     ]
     resources = [
       aws_secretsmanager_secret.database_url_key.arn,
+      aws_secretsmanager_secret.jwt_key.arn
     ]
   }
 }
