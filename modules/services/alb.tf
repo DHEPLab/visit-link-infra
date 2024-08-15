@@ -92,7 +92,7 @@ resource "aws_lb_listener_rule" "service_forward_listener" {
 
   condition {
     path_pattern {
-      values = ["/api/*", "/admin/*"]
+      values = ["/api/*", "/admin/*", "/swagger-ui/*", "/v2/api-docs"]
     }
   }
 

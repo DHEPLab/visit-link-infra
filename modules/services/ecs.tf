@@ -26,10 +26,12 @@ resource "aws_ecs_task_definition" "service_task" {
           {
               "name":"DATABASE_URL",
               "valueFrom":  "${aws_secretsmanager_secret.database_url_key.arn}"
-          },
+          }
+      ],
+      "environment": [
           {
               "name":"SPRING_PROFILES_ACTIVE",
-              "valueFrom":  "${var.env}"
+              "value":  "${var.env}"
           }
       ],
       "logConfiguration": {
