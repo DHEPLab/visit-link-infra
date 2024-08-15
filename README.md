@@ -1,4 +1,4 @@
-# AugMed-infra
+# Visit link Infra
 
 ## Install hook locally
 
