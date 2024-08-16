@@ -75,7 +75,7 @@ resource "aws_lb_target_group" "service_target_group" {
     interval            = "60"
     protocol            = "HTTP"
     matcher             = "200"
-    timeout             = "50"
+    timeout             = "5"
     path                = "/"
     unhealthy_threshold = "3"
   }
