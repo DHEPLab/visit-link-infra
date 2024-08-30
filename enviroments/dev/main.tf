@@ -60,7 +60,8 @@ module "db" {
 }
 
 module "s3" {
-  source      = "../../modules/s3"
+  source = "../../modules/s3"
+
   bucket_name = "${local.project_name}-bucket-${local.environment}"
   tags = {
     Environment = "dev"
@@ -79,4 +80,5 @@ module "service" {
   admin_web_image_uri = module.repository.admin_web_image_uri
   region              = local.region
   database_url        = module.db.database_url
+  bucket_anr          = module.s3.bucket_arn
 }

@@ -43,3 +43,7 @@ variable "region" {
 variable "database_url" {
   type = string
 }
+
+variable "bucket_anr" {
+  type = string
+}
