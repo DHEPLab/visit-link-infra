@@ -59,6 +59,14 @@ module "db" {
   bastion_host_subnet_id         = module.network.public_subnet.ids[0]
 }
 
+module "s3" {
+  source      = "../../modules/s3"
+  bucket_name = "${local.project_name}-bucket-${local.environment}"
+  tags = {
+    Environment = "dev"
+  }
+}
+
 module "service" {
   source = "../../modules/services"
 
