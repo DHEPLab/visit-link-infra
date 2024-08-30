@@ -49,7 +49,8 @@ resource "aws_ecs_task_definition" "service_task" {
   network_mode             = "awsvpc"
   memory                   = 1024
   cpu                      = 512
-  execution_role_arn       = aws_iam_role.ecs_task_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 }
 
 resource "aws_ecs_task_definition" "admin_web_task" {
@@ -75,7 +76,7 @@ resource "aws_ecs_task_definition" "admin_web_task" {
   network_mode             = "awsvpc"
   memory                   = 512
   cpu                      = 256
-  execution_role_arn       = aws_iam_role.ecs_task_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 }
 
 resource "aws_ecs_service" "backend_service" {
