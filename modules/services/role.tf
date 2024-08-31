@@ -72,7 +72,31 @@ resource "aws_iam_policy" "s3_access_policy" {
   })
 }
 
+resource "aws_iam_policy" "kms_access_policy" {
+  name        = "${var.project_name}-kms-access-policy-${var.env}"
+  description = "Policy to allow ECS tasks to use KMS GenerateDataKey"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "kms:GenerateDataKey",
+          "kms:Decrypt"
+        ]
+        Effect   = "Allow"
+        Resource = var.bucket_encryption_key_arn
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "ecs_task_s3_access" {
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = aws_iam_policy.s3_access_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_kms_access" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.kms_access_policy.arn
 }

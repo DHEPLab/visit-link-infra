@@ -47,3 +47,7 @@ variable "database_url" {
 variable "bucket_anr" {
   type = string
 }
+
+variable "bucket_encryption_key_arn" {
+  type = string
+}

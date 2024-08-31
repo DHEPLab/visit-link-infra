@@ -71,14 +71,15 @@ module "s3" {
 module "service" {
   source = "../../modules/services"
 
-  env                 = local.environment
-  project_name        = local.project_name
-  vpc_id              = module.network.vpc_id
-  alb_subnet_ids      = module.network.public_subnet.ids
-  ecs_subnet_ids      = module.network.private_subnet.ids
-  service_image_uri   = module.repository.service_image_uri
-  admin_web_image_uri = module.repository.admin_web_image_uri
-  region              = local.region
-  database_url        = module.db.database_url
-  bucket_anr          = module.s3.bucket_arn
+  env                       = local.environment
+  project_name              = local.project_name
+  vpc_id                    = module.network.vpc_id
+  alb_subnet_ids            = module.network.public_subnet.ids
+  ecs_subnet_ids            = module.network.private_subnet.ids
+  service_image_uri         = module.repository.service_image_uri
+  admin_web_image_uri       = module.repository.admin_web_image_uri
+  region                    = local.region
+  database_url              = module.db.database_url
+  bucket_anr                = module.s3.bucket_arn
+  bucket_encryption_key_arn = module.s3.bucket_encryption_key_arn
 }
