@@ -72,6 +72,7 @@ module "service" {
   source = "../../modules/services"
 
   env                       = local.environment
+  dev_account               = local.dev_account
   project_name              = local.project_name
   vpc_id                    = module.network.vpc_id
   alb_subnet_ids            = module.network.public_subnet.ids

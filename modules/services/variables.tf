@@ -7,6 +7,11 @@ variable "env" {
   }
 }
 
+variable "dev_account" {
+  description = "the dev account can grunt dev environment access"
+  type        = list(string)
+}
+
 variable "project_name" {
   description = "project name"
   type        = string

@@ -100,3 +100,17 @@ resource "aws_iam_role_policy_attachment" "ecs_task_kms_access" {
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = aws_iam_policy.kms_access_policy.arn
 }
+
+resource "aws_iam_policy_attachment" "user_s3_access" {
+  count      = var.env == "dev" ? 1 : 0
+  name       = "user-s3-access"
+  policy_arn = aws_iam_policy.s3_access_policy.arn
+  users      = var.dev_account
+}
+
+resource "aws_iam_policy_attachment" "user_kms_access" {
+  count      = var.env == "dev" ? 1 : 0
+  name       = "user-kms-access"
+  policy_arn = aws_iam_policy.kms_access_policy.arn
+  users      = var.dev_account
+}
