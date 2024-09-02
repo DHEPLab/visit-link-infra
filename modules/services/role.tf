@@ -101,16 +101,59 @@ resource "aws_iam_role_policy_attachment" "ecs_task_kms_access" {
   policy_arn = aws_iam_policy.kms_access_policy.arn
 }
 
+resource "aws_iam_policy" "user_s3_access_policy" {
+  name        = "${var.project_name}-user-s3-access-policy-${var.env}"
+  description = "Policy to allow dev account to access S3 bucket"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Effect = "Allow"
+        Resource = [
+          var.bucket_anr,
+          "${var.bucket_anr}/*"
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_policy_attachment" "user_s3_access" {
   count      = var.env == "dev" ? 1 : 0
   name       = "user-s3-access"
-  policy_arn = aws_iam_policy.s3_access_policy.arn
+  policy_arn = aws_iam_policy.user_s3_access_policy.arn
   users      = var.dev_account
+}
+
+resource "aws_iam_policy" "user_kms_access_policy" {
+  name        = "${var.project_name}-user-kms-access-policy-${var.env}"
+  description = "Policy to allow dev account to use KMS GenerateDataKey"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "kms:GenerateDataKey",
+          "kms:Decrypt"
+        ]
+        Effect   = "Allow"
+        Resource = var.bucket_encryption_key_arn
+      }
+    ]
+  })
 }
 
 resource "aws_iam_policy_attachment" "user_kms_access" {
   count      = var.env == "dev" ? 1 : 0
   name       = "user-kms-access"
-  policy_arn = aws_iam_policy.kms_access_policy.arn
+  policy_arn = aws_iam_policy.user_kms_access_policy.arn
   users      = var.dev_account
 }
