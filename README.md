@@ -42,7 +42,7 @@ The environment folder is the main module for different env where maintain the c
    export AWS_ACCESS_KEY_ID={your_access_key}
    export AWS_SECRET_ACCESS_KEY={your_secret_key}
    ```
-2. Go into the `env` folder(ie: src/environments/dev)
+2. Go into the `env` folder(ie: environments/dev)
 3. Run terraform commands
    ```bash
    terraform init

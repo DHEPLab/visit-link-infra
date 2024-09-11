@@ -9,7 +9,7 @@ repos:
       - id: jira-ticket
         name: check for jira ticket
         language: pygrep
-        entry: '\A(?!\[UNCAIM-[0-9]+\]|\[TECH\]\[([A-Z][a-z]+.)(\s(&|&&)\s[A-Z][a-z]+.)?\]\s{0,1}build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test(\(([a-z \-]+)\))?\!?:\ .+$)'
+        entry: '\A(?!\[HF-[0-9]+\]|\[TECH\]\[([A-Z][a-z]+.)(\s(&|&&)\s[A-Z][a-z]+.)?\]\s{0,1}build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test(\(([a-z \-]+)\))?\!?:\ .+$)'
         args: [ --multiline ]
         stages: [ commit-msg ]
 
