@@ -29,7 +29,7 @@ resource "aws_ecs_task_definition" "service_task" {
           },
           {
               "name":"GOOGLE_MAP_API_KEY",
-              "value":  "${aws_secretsmanager_secret.google_map_api_key.arn}"
+              "valueFrom":  "${aws_secretsmanager_secret.google_map_api_key.arn}"
           }
       ],
       "environment": [

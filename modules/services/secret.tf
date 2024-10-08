@@ -26,7 +26,3 @@ resource "aws_secretsmanager_secret_version" "jwt_key_version" {
 resource "aws_secretsmanager_secret" "google_map_api_key" {
   name = "${var.project_name}-google-map-api-key-${var.env}"
 }
-
-resource "aws_secretsmanager_secret_version" "google_map_api_key_version" {
-  secret_id = aws_secretsmanager_secret.google_map_api_key.id
-}
